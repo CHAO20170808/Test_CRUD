@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Demo</title>
+  <script>
+    // Function to refresh the page
+    function refreshPage() {
+        location.reload(); // This reloads the current page
+    }
+</script>
+
+  <script>
+    // Function to handle 'Create'
+    async function createData() {
+      const name = document.getElementById('name').value;
+      const price = document.getElementById('price').value;
+
+      const response = await fetch('http://127.0.0.1:5000/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, price })
+      });
+
+      const result = await response.json();
+      alert(`Create Result: ${JSON.stringify(result)}`);
+    }
+
+    // Function to handle 'Read'
+    async function readData() {
+      const response = await fetch('http://127.0.0.1:5000/read');
+      const result = await response.json();
+
+      const output = document.getElementById('output');
+      output.innerHTML = '<h3>Data from /read</h3>';
+      result.forEach(item => {
+        output.innerHTML += `<p>ID: ${item[0]}, Name: ${item[1]}, Price: ${item[2]}</p>`;
+      });
+    }
+
+    // Function to handle 'Update'
+    async function updateData() {
+      const id =document.getElementById('updateId').value;
+      const updatedName = document.getElementById('updateName').value;
+      const updatedPrice = document.getElementById('updatePrice').value;
+
+      const response = await fetch('http://127.0.0.1:5000/update/'+id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: updatedName, price: updatedPrice })
+      });
+
+      const result = await response.json();
+      alert(`Update Result: ${JSON.stringify(result)}`);
+    }
+
+    // Function to handle 'Delete'
+/*     async function deleteData() {
+      const did =document.getElementById('udelId').value;
+      const response = await fetch('http://127.0.0.1:5000/delete/${did}', {
+        method: 'DELETE'
+      });
+
+      const result = await response.json();
+      alert(`Delete Result: ${JSON.stringify(result)}`);
+    } */
+
+// Function to handle 'Delete'
+      async function deleteData() {
+  // Fixing the ID mismatch: Access 'delId' instead of 'udelId'
+  const id = document.getElementById('delId').value;
+
+  if (!id) {
+    alert("Please enter an ID to delete!"); // Error handling for empty ID
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/delete/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to delete record with ID ${id}. Status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    alert(`Delete Result: ${JSON.stringify(result)}`);
+    } catch (error) {
+    alert(`Error: ${error.message}`);
+    }
+  }
+
+
+
+  </script>
+</head>
+<body>
+  <h1>API Demo</h1>
+
+  <!-- Create Section -->
+  <section>
+    <h2>Create</h2>
+    <label for="name">Name:</label>
+    <input type="text" id="name" placeholder="Enter name">
+    <br>
+    <label for="price">Price:</label>
+    <input type="number" id="price" placeholder="Enter price">
+    <br>
+    <button onclick="createData()">Create Data</button>
+  </section>
+  <hr>
+
+  <!-- Read Section -->
+  <section>
+    <h2>Read</h2>
+    <button onclick="readData()">Fetch Data</button>
+    <div id="output"></div>
+    <h1>刷新頁面按鈕</h1>
+    <button onclick="refreshPage()">刷新頁面</button>
+  </section>
+  <hr>
+
+  <!-- Update Section -->
+  <section>
+    <h2>Update</h2>
+    <label for="updateIdn">ID:</label>  
+    <input type="text" id="updateId" placeholder="Enter update ID">
+    <br>
+    <label for="updateName">New Name:</label>
+    <input type="text" id="updateName" placeholder="Enter new name">
+    <br>
+    <label for="updatePrice">New Price:</label>
+    <input type="number" id="updatePrice" placeholder="Enter new price">
+    <br>
+    <button onclick="updateData()">Update Data</button>
+  </section>
+  <hr>
+
+  <!-- Delete Section -->
+  <section>
+    <h2>Delete</h2>
+    <label for="DelIdx">ID:</label>  
+    <input type="text" id="delId" placeholder="Enter ID to delete">
+    <br>
+    <button onclick="deleteData()">Delete Data</button>
+  </section>
+</body>
+</html>
